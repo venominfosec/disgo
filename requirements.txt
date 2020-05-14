@@ -2,4 +2,4 @@ requests
 cfscrape
 datetime
 argparse
-gmai
+gmail
