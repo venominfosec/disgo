@@ -39,7 +39,8 @@ def main(target, time_delay, method, target_email, source_email, password):
 
 # Test if site has changed
 def isAvailable(target, method):
-    headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0',
+    headers = { 'Referer': 'https://dickssportinggoods.com/',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-US,en;q=0.5',
                 'Accept-Encoding': 'gzip, deflate',
@@ -106,6 +107,7 @@ def log(string):
             output.write('\n'+str(string))
     except:
         print('[!] Unable to write log to file '+str(FILE))
+        print(string)
 
 
 # Configure and launch program
@@ -115,10 +117,10 @@ if __name__ == '__main__':
     parser.add_argument('target', help='Full GUI URL or if API, comma separated SKU and zip code (eg: 11465449,10001')
     parser.add_argument('-t', '--time-delay', help='Minutes to wait before rechecking if product is available, default = 5')
     parser.add_argument('-m', '--detect-method', help='Detection method to use if product is available, options: api, gui', required=True)
-    parser.add_argument('-te', '--target-email', help='Email to send notifications to if product is online', required=True)
+    parser.add_argument('-te', '--target-email', help='Email to send notifications to if product is available', required=True)
     parser.add_argument('-se', '--source-email', help='Gmail account to send notification from', required=True)
-    parser.add_argument('-o', '--output', help='File to log results to, default = dsgo_log.txt')
-    parser.add_argument('--insecure', help='Insecurely provide the Gmail account password as an argument')
+    parser.add_argument('-o', '--output', help='File to log results to, default = '+FILE)
+    parser.add_argument('--insecure', help='Insecurely provide the source Gmail account password as an argument')
     args = parser.parse_args()
     arg_target= args.target
     arg_time = args.time_delay
@@ -168,7 +170,7 @@ if __name__ == '__main__':
     if not arg_output:
         arg_output = FILE
     else:
-        if not re.match(r'[a-zA-Z0-9_-]+\.\w+', arg_output):
+        if not re.match(r'[a-zA-Z0-9_-]+\.[a-zA-Z0-9]+$', arg_output):
             print('[!] ERROR: Illegal file name provided')
             sys.exit()
     ## Emails
@@ -177,7 +179,7 @@ if __name__ == '__main__':
     if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", arg_source_email):
         print('[!] WARNING: Source email does not match regex pattern. Check input for typos.')
     if 'gmail' not in arg_source_email.lower():
-        print('[!] ERROR: "'+arg_source_email+'" is not a Gmail address. A Gmail account required to send email through this script.')
+        print('[!] ERROR: "'+arg_source_email+'" is not a Gmail address. A Gmail account is required to send email through this script.')
         sys.exit()
     ## Source email password
     if arg_insecure:
@@ -189,3 +191,4 @@ if __name__ == '__main__':
     # Run program
     FILE = arg_output
     main(arg_target, arg_time, arg_method, arg_target_email, arg_source_email, arg_password)
+
